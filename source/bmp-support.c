@@ -284,7 +284,7 @@ int bmp_break(void)
  */
 int bmp_attach(int tpwr, int connect_srst, char *name, size_t namelength, char *arch, size_t archlength)
 {
-  char buffer[512];
+  char buffer[2048];
   size_t size;
   int ok;
 
@@ -492,7 +492,7 @@ int bmp_fullerase(void)
     do {
       sprintf(cmd, "vFlashErase:%x,%x", (unsigned)FlashRgn[rgn].address, (unsigned)size);
       gdbrsp_xmit(cmd, -1);
-      rcvd = gdbrsp_recv(cmd, pktsize, 500);
+      rcvd = gdbrsp_recv(cmd, pktsize, 5000);
       failed = (rcvd != 2 || memcmp(cmd, "OK", rcvd) != 0);
       if (failed)
         size /= 2;
@@ -557,7 +557,7 @@ int bmp_download(FILE *fp)
     assert(flashsectors * FlashRgn[rgn].blocksize <= FlashRgn[rgn].address + FlashRgn[rgn].size);
     sprintf(cmd, "vFlashErase:%x,%x", (unsigned)FlashRgn[rgn].address, (unsigned)(flashsectors * FlashRgn[rgn].blocksize));
     gdbrsp_xmit(cmd, -1);
-    rcvd = gdbrsp_recv(cmd, pktsize, 500);
+    rcvd = gdbrsp_recv(cmd, pktsize, 7000);
     if (rcvd != 2 || memcmp(cmd, "OK", rcvd)!= 0) {
       notice(BMPERR_FLASHERASE, "Flash erase failed");
       free(cmd);
