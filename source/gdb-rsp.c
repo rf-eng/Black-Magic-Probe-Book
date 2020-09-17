@@ -127,7 +127,14 @@ size_t gdbrsp_recv(char *buffer, size_t size, int timeout)
   while (cache_idx < cache_size) {
     size_t count;
     if (rs232_isopen())
+    {
+      #if defined _WIN32
+        Sleep(10);
+      #else
+        usleep(10 * 1000);
+      #endif
       count = rs232_recv(cache + cache_idx, cache_size - cache_idx);
+    }
     else
       count = tcpip_recv(cache + cache_idx, cache_size - cache_idx);
     cache_idx += count;
